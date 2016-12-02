@@ -140,7 +140,9 @@ public class Measure implements Serializable {
     } 
 
     public static Measure updateMeasure(Measure ls) {
-    	ls.setPerson(Measure.getMeasureById(ls.getIdMeasure()).getPerson());
+    	if(ls.getPerson() == null){
+    		ls.setPerson(Measure.getMeasureById(ls.getIdMeasure()).getPerson());
+    	}
         EntityManager em = LifeCoachDao.instance.createEntityManager(); 
         EntityTransaction tx = em.getTransaction();
         tx.begin();

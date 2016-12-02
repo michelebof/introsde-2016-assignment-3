@@ -122,6 +122,10 @@ public class Person implements Serializable {
 	
 	@XmlTransient
 	public List<Measure> getHealthHistory() {
+		if (this.healthHistory.isEmpty() && !this.getCurrentHealth().isEmpty()){
+			this.setHealthHistory(this.getCurrentHealth());
+		}
+			
 		return this.healthHistory;
 	}
 
@@ -148,15 +152,17 @@ public class Person implements Serializable {
     }
 
     public static Person savePerson(Person p) {
-        EntityManager em = LifeCoachDao.instance.createEntityManager();
+    	List<Measure> m = p.getCurrentHealth();
+    	p.setCurrentHealth(null);
+    	EntityManager em = LifeCoachDao.instance.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         tx.begin();
         em.persist(p);
         tx.commit();
         LifeCoachDao.instance.closeConnections(em);
-        for(int i = 0;i<p.getCurrentHealth().size();i++){
-        	p.getCurrentHealth().get(i).setPerson(p);
-        	Measure.updateMeasure(p.getCurrentHealth().get(i));
+        for(int i = 0;i<m.size();i++){
+        	m.get(i).setPerson(p);
+        	Measure.updateMeasure(m.get(i));
         }
         return p;
     } 
@@ -175,6 +181,10 @@ public class Person implements Serializable {
     }
 
     public static void removePerson(Person p) {
+    	List<Measure> list = p.getHealthHistory();
+    	for(Measure m : list){
+        	Measure.removeMeasure(m);
+        }
         EntityManager em = LifeCoachDao.instance.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         tx.begin();
@@ -182,6 +192,7 @@ public class Person implements Serializable {
         em.remove(p);
         tx.commit();
         LifeCoachDao.instance.closeConnections(em);
+        
     }
     
     
