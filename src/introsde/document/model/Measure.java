@@ -126,7 +126,6 @@ public class Measure implements Serializable {
     }
 
     public static Measure saveMeasure(int personId, Measure ls) throws ParseException {
-    	System.out.println("-------------------------------"+personId);
     	ls.setPerson(Person.getPersonById(personId));
     	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
     	ls.setDate(sdf.format(new Date()));
@@ -141,6 +140,7 @@ public class Measure implements Serializable {
     } 
 
     public static Measure updateMeasure(Measure ls) {
+    	ls.setPerson(Measure.getMeasureById(ls.getIdMeasure()).getPerson());
         EntityManager em = LifeCoachDao.instance.createEntityManager(); 
         EntityTransaction tx = em.getTransaction();
         tx.begin();
